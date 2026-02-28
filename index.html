@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>のぼれ！九九キング</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="start-screen">
+  <h1>のぼれ！九九キング</h1>
+  <button id="start-btn">スタート</button>
+</div>
+
+<div id="game-screen" class="hidden">
+  <div id="ui">
+    <div>スコア: <span id="score">0</span></div>
+    <div>タイム: <span id="time">60</span></div>
+  </div>
+
+  <div id="game-area">
+
+    <!-- 雲はここ -->
+    <div class="cloud">☁️</div>
+    <div class="cloud">☁️</div>
+
+    <div id="world">
+      <div class="ground"></div>
+    </div>
+
+    <div id="character">🧍</div>
+
+  </div>
+
+  <div id="question"></div>
+  <div id="input-display"></div>
+  <div id="number-buttons"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
