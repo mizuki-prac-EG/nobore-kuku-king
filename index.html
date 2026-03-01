@@ -8,34 +8,48 @@
 </head>
 <body>
 
+<audio id="bgm" src="bgm.mp3" loop></audio>
+<audio id="correct-se" src="correct.mp3"></audio>
+<audio id="wrong-se" src="wrong.mp3"></audio>
+
 <div id="start-screen">
   <h1>のぼれ！九九キング</h1>
   <button id="start-btn">スタート</button>
 </div>
 
 <div id="game-screen" class="hidden">
+
   <div id="ui">
     <div>スコア: <span id="score">0</span></div>
     <div>タイム: <span id="time">60</span></div>
+    <div>残り: <span id="countdown">10.00</span></div>
   </div>
 
   <div id="game-area">
-
-    <!-- 雲はここ -->
-    <div class="cloud">☁️</div>
-    <div class="cloud">☁️</div>
+    <div id="center-message"></div>
+    <div id="result-mark"></div>
 
     <div id="world">
-      <div class="ground"></div>
+      <div class="ground" id="ground"></div>
+      <div class="platform" id="platformBottom"></div>
+      <div class="platform" id="platformTop"></div>
     </div>
 
     <div id="character">🧍</div>
-
   </div>
 
   <div id="question"></div>
   <div id="input-display"></div>
+
   <div id="number-buttons"></div>
+
+  <div id="control-buttons">
+    <button id="delete-btn">削除</button>
+    <button id="enter-btn">決定</button>
+  </div>
+
+  <button id="back-btn">タイトルに戻る</button>
+
 </div>
 
 <script src="script.js"></script>
