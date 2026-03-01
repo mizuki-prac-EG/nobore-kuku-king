@@ -1,55 +1,62 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>のぼれ！九九キング</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>のぼれ！九九キング</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
 </head>
-<body>
+
+<body class="day">
 
 <audio id="bgm" src="bgm.mp3" loop></audio>
 <audio id="correct-se" src="correct.mp3"></audio>
 <audio id="wrong-se" src="wrong.mp3"></audio>
 
+<!-- スタート画面 -->
 <div id="start-screen">
   <h1>のぼれ！九九キング</h1>
+  <h2>キャラ選択</h2>
+  <div id="character-select"></div>
   <button id="start-btn">スタート</button>
+  <button id="reset-score-btn">ハイスコアリセット</button>
 </div>
 
+<!-- ゲーム画面 -->
 <div id="game-screen" class="hidden">
 
   <div id="ui">
     <div>スコア: <span id="score">0</span></div>
-    <div>タイム: <span id="time">60</span></div>
+    <div>ハイスコア: <span id="high-score">0</span></div>
+    <div>コンボ: <span id="combo">0</span></div>
     <div>残り: <span id="countdown">10.00</span></div>
   </div>
 
   <div id="game-area">
     <div id="center-message"></div>
     <div id="result-mark"></div>
-
-    <div id="world">
-      <div class="ground" id="ground"></div>
-      <div class="platform" id="platformBottom"></div>
-      <div class="platform" id="platformTop"></div>
-    </div>
-
-    <div id="character">🧍</div>
+    <img id="character">
   </div>
 
   <div id="question"></div>
   <div id="input-display"></div>
-
   <div id="number-buttons"></div>
 
-  <div id="control-buttons">
+  <div>
     <button id="delete-btn">削除</button>
     <button id="enter-btn">決定</button>
+    <button id="back-btn">タイトルへ</button>
   </div>
 
-  <button id="back-btn">タイトルに戻る</button>
+</div>
 
+<!-- 結果画面 -->
+<div id="result-screen" class="hidden">
+  <h1>RESULT</h1>
+  <div id="final-score"></div>
+  <div id="high-score-result"></div>
+  <div id="unlock-message"></div>
+  <button onclick="location.reload()">タイトルへ</button>
 </div>
 
 <script src="script.js"></script>
