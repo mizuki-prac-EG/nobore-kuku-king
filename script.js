@@ -1,215 +1,115 @@
-let a, b, correctAnswer;
-let inputValue = "";
+let score=0;
+let combo=0;
+let inputValue="";
+let correctAnswer=0;
+let countdown=10;
+let timer;
+let highScore=localStorage.getItem("highScore")||0;
+let selectedChar="day_char.png";
 
-let score = 0;
-let time = 60;
-let level = 0;
-let gameStarted = false;
+const characters=[
+  {name:"デイヒーロー", src:"day_char.png", unlock:0},
+  {name:"宮川将軍", src:"miya_char.png", unlock:622}
+];
 
-let timerInterval;
-let countdownInterval;
-let countdownTime = 10.0;
+const scoreEl=document.getElementById("score");
+const comboEl=document.getElementById("combo");
+const highScoreEl=document.getElementById("high-score");
+const questionEl=document.getElementById("question");
+const characterImg=document.getElementById("character");
 
-const colors = ["red", "orange", "blue", "purple", "pink"];
+highScoreEl.textContent=highScore;
 
-const startBtn = document.getElementById("start-btn");
-const backBtn = document.getElementById("back-btn");
-const startScreen = document.getElementById("start-screen");
-const gameScreen = document.getElementById("game-screen");
+/* 背景切り替え */
+function updateBackground(){
+  if(score<200)document.body.className="day";
+  else if(score<400)document.body.className="sunset";
+  else if(score<800)document.body.className="space";
+  else document.body.className="blackfall";
+}
 
-const bgm = document.getElementById("bgm");
-const correctSE = document.getElementById("correct-se");
-const wrongSE = document.getElementById("wrong-se");
+/* 問題生成 */
+function generateQuestion(){
+  let a=Math.floor(Math.random()*9)+1;
+  let b=Math.floor(Math.random()*9)+1;
+  correctAnswer=a*b;
+  questionEl.textContent=`${a} × ${b}`;
+}
 
-const questionEl = document.getElementById("question");
-const inputDisplay = document.getElementById("input-display");
-const scoreEl = document.getElementById("score");
-const timeEl = document.getElementById("time");
-const countdownEl = document.getElementById("countdown");
+/* ゲーム開始 */
+document.getElementById("start-btn").onclick=()=>{
+  document.getElementById("start-screen").classList.add("hidden");
+  document.getElementById("game-screen").classList.remove("hidden");
+  startGame();
+};
 
-const centerMessage = document.getElementById("center-message");
-const resultMark = document.getElementById("result-mark");
+function startGame(){
+  score=0;
+  combo=0;
+  scoreEl.textContent=0;
+  comboEl.textContent=0;
+  updateBackground();
+  characterImg.src=selectedChar;
+  generateQuestion();
+  startTimer();
+}
 
-const numberButtons = document.getElementById("number-buttons");
-const deleteBtn = document.getElementById("delete-btn");
-const enterBtn = document.getElementById("enter-btn");
+/* タイマー */
+function startTimer(){
+  countdown=10;
+  document.getElementById("countdown").textContent=countdown.toFixed(2);
+  timer=setInterval(()=>{
+    countdown-=0.05;
+    document.getElementById("countdown").textContent=countdown.toFixed(2);
+    if(countdown<=0){
+      clearInterval(timer);
+      gameOver();
+    }
+  },50);
+}
 
-const character = document.getElementById("character");
-const ground = document.getElementById("ground");
-let platformTop = document.getElementById("platformTop");
-let platformBottom = document.getElementById("platformBottom");
+/* 回答 */
+document.getElementById("enter-btn").onclick=checkAnswer;
 
-startBtn.addEventListener("click", startGame);
-backBtn.addEventListener("click", returnToTitle);
+function checkAnswer(){
+  if(parseInt(inputValue)===correctAnswer){
+    combo++;
+    let add=10;
+    if(combo===3)add+=5;
+    if(combo===5)add+=10;
 
-function startGame() {
+    score+=add;
+    updateBackground();
+  }else{
+    combo=0;
+    score=Math.max(0,score-5);
+  }
 
-  startScreen.classList.add("hidden");
-  gameScreen.classList.remove("hidden");
-
-  bgm.currentTime = 0;
-  bgm.play();
-
-  resetGame();
-
-  centerMessage.textContent = "START!";
-  setTimeout(() => centerMessage.textContent = "", 1500);
-
-  platformTop.style.backgroundColor = getRandomColor();
+  scoreEl.textContent=score;
+  comboEl.textContent=combo;
+  inputValue="";
+  document.getElementById("input-display").textContent="";
   generateQuestion();
 }
 
-function returnToTitle() {
+/* ゲーム終了 */
+function gameOver(){
+  document.getElementById("game-screen").classList.add("hidden");
+  document.getElementById("result-screen").classList.remove("hidden");
 
-  clearInterval(timerInterval);
-  clearInterval(countdownInterval);
+  document.getElementById("final-score").textContent="今回スコア："+score;
 
-  bgm.pause();
-
-  gameScreen.classList.add("hidden");
-  startScreen.classList.remove("hidden");
-}
-
-function resetGame() {
-
-  score = 0;
-  time = 60;
-  level = 0;
-  gameStarted = false;
-
-  scoreEl.textContent = score;
-  timeEl.textContent = time;
-
-  ground.style.display = "block";
-  platformBottom.style.display = "none";
-  character.style.bottom = "10px";
-}
-
-function getRandomColor(excludeColor = null) {
-  let newColor;
-  do {
-    newColor = colors[Math.floor(Math.random() * colors.length)];
-  } while (newColor === excludeColor);
-  return newColor;
-}
-
-function generateQuestion() {
-  a = Math.floor(Math.random() * 9) + 1;
-  b = Math.floor(Math.random() * 9) + 1;
-  correctAnswer = a * b;
-  questionEl.textContent = `${a} × ${b} = ?`;
-  inputValue = "";
-  inputDisplay.textContent = "";
-}
-
-for (let i = 0; i <= 9; i++) {
-  const btn = document.createElement("button");
-  btn.textContent = i;
-  btn.onclick = () => {
-    if (inputValue.length < 2) {
-      inputValue += i;
-      inputDisplay.textContent = inputValue;
-    }
-  };
-  numberButtons.appendChild(btn);
-}
-
-deleteBtn.onclick = () => {
-  inputValue = inputValue.slice(0, -1);
-  inputDisplay.textContent = inputValue;
-};
-
-enterBtn.onclick = () => checkAnswer();
-
-function checkAnswer() {
-
-  if (!gameStarted) {
-    startTimer();
-    gameStarted = true;
+  if(score>highScore){
+    localStorage.setItem("highScore",score);
+    document.getElementById("high-score-result").textContent="🏆 ハイスコア更新！";
+  }else{
+    document.getElementById("high-score-result").textContent="";
   }
 
-  if (parseInt(inputValue) === correctAnswer) {
-
-    correctSE.currentTime = 0;
-    correctSE.play();
-
-    showResult("〇", "green");
-
-    score++;
-    level++;
-
-    if (level === 1) {
-      ground.style.display = "none";
-      platformBottom.style.display = "block";
-      character.style.bottom = "60px";
-    }
-
-    scoreEl.textContent = score;
-    time += 5;
-
-    swapPlatforms();
-    resetCountdown();
-    generateQuestion();
-
-  } else {
-
-    wrongSE.currentTime = 0;
-    wrongSE.play();
-
-    showResult("✕", "red");
+  if(score>=622){
+    document.getElementById("unlock-message").textContent=
+      "✨ ネタ枠解禁！宮川将軍参上！✨";
+  }else{
+    document.getElementById("unlock-message").textContent="";
   }
-
-  inputValue = "";
-  inputDisplay.textContent = "";
-}
-
-function showResult(mark, color) {
-  resultMark.textContent = mark;
-  resultMark.style.color = color;
-  setTimeout(() => resultMark.textContent = "", 800);
-}
-
-function swapPlatforms() {
-  const prevColor = platformTop.style.backgroundColor;
-  platformBottom.style.backgroundColor = prevColor;
-  platformTop.style.backgroundColor = getRandomColor(prevColor);
-}
-
-function startTimer() {
-  timerInterval = setInterval(() => {
-    time--;
-    timeEl.textContent = time;
-    if (time <= 0) endGame();
-  }, 1000);
-
-  startCountdown();
-}
-
-function startCountdown() {
-  countdownTime = 10.0;
-  countdownEl.textContent = countdownTime.toFixed(2);
-
-  countdownInterval = setInterval(() => {
-    countdownTime -= 0.01;
-    countdownEl.textContent = countdownTime.toFixed(2);
-
-    if (countdownTime <= 0) {
-      endGame();
-    }
-  }, 10);
-}
-
-function resetCountdown() {
-  clearInterval(countdownInterval);
-  startCountdown();
-}
-
-function endGame() {
-
-  clearInterval(timerInterval);
-  clearInterval(countdownInterval);
-
-  bgm.pause();
-
-  centerMessage.textContent = "GAME OVER";
 }
